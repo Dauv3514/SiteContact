@@ -17,7 +17,7 @@ const router = createRouter({
             component: ContactsView
         },
         {
-            path: "/contact/:id?",
+            path: "/contact/:id",
             name: "editContact",
             component: EditContact
         }

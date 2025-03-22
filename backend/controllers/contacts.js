@@ -3,7 +3,7 @@ import client from "../database.js";
 export const getContacts = async (req, res) => {
     try {
         const query = `
-            SELECT name, phone, email, designation, created_at
+            SELECT name, phone, email, designation, created_at, id
             FROM contacts
         `
         const {rows} = await client.query(query);

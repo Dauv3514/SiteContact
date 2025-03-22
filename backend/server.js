@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from 'dotenv';
 import client from "./database.js";
+import cors from "cors";
 import contactsRoute from "../backend/routes/contacts.js";
 import errorHandler from "./middleware/errorHandler.js";
 
@@ -12,6 +13,7 @@ const connect = async () => {
     try {
         await client.connect();
         app.use(express.json());
+        app.use(cors());
         const port = process.env.port || 3000;
         app.listen (port, () => {
             console.log(`Server running on port ${port}`);
