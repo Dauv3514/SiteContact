@@ -23,7 +23,6 @@
                 phone: phone.value,
                 designation: poste.value
             });
-            console.log(response, 'clair');
             if(response.status === 201) {
                 toast.success('Le contact a été ajouté')
                 name.value = '';
