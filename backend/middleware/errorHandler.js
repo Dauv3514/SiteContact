@@ -19,6 +19,9 @@ const errorHandler = (err, req, res, next) => {
         case constants.SERVER_ERROR:
             errorTitle = "Internal Server Error";
             break;
+        case constants.REGISTRATION_ERROR: 
+            errorTitle = "Registration Error";
+        break;
         default:
             errorTitle = "Unknown Error";
             break;

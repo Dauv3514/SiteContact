@@ -1,10 +1,12 @@
 import client from "../database.js";
+import {constants} from "../constants.js"; 
 
 export const getContacts = async (req, res) => {
     try {
         const query = `
-            SELECT name, phone, email, designation, created_at, id
+            SELECT name, phone, email, designation, created_at, group_name, id
             FROM contacts
+            ORDER BY group_name ASC
         `
         const {rows} = await client.query(query);
         res.status(200).json({
@@ -19,19 +21,19 @@ export const getContacts = async (req, res) => {
 
 export const newContact = async (req, res, next) => {
     try {
-        const {name, email, phone, designation} = req.body;
-        if(!name || !email || !phone || !designation) {
+        const {name, email, phone, designation, group_name} = req.body;
+        if(!name || !email || !phone || !designation || !group_name) {
             const error = new Error("All fields are required");
             error.statusCode = 400;
             return next(error); 
         }
         const query = `
-            INSERT INTO contacts (name, phone, email, designation) 
-            VALUES ($1, $2, $3, $4) 
+            INSERT INTO contacts (name, phone, email, designation, group_name) 
+            VALUES ($1, $2, $3, $4, $5) 
             RETURNING *
         `;
         const values = [
-            name, phone, email, designation
+            name, phone, email, designation, group_name
         ]
         const {rows} = await client.query(query, values);
         res.status(201).json({
@@ -71,7 +73,7 @@ export const getContact = async (req, res, next) => {
 export const updateContact = async (req, res) => {
     try {
         const contactId = req.params.id;
-        const { name, email, phone, designation } = req.body;
+        const { name, email, phone, designation, group_name } = req.body;
         if (!contactId) {
             const error = new Error("Contact not found");
             error.statusCode = 400;
@@ -80,11 +82,11 @@ export const updateContact = async (req, res) => {
 
         const query = `
             UPDATE contacts
-            SET name = $1, phone = $2, email = $3, designation = $4
+            SET name = $1, phone = $2, email = $3, designation = $4, group_name = $5
             WHERE id = $5
             RETURNING *
         `
-        const {rows} = await client.query(query, [name, phone, email, designation, contactId]);
+        const {rows} = await client.query(query, [name, phone, email, designation, group_name, contactId]);
         res.status(200).json({
             message: "Update contact",
             success: true,

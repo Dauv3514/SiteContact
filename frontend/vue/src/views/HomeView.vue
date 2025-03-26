@@ -54,6 +54,7 @@
             <th>Email</th>
             <th>Contact No#</th>
             <th>Designation</th>
+            <th>Groupe</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -63,6 +64,7 @@
                 <td>{{ contact.email }}</td>
                 <td>{{ contact.phone }}</td>
                 <td>{{ contact.designation }}</td>
+                <td>{{ contact.group_name }}</td>
                 <td>
                 <router-link 
                     :to="{ name: 'editContact', params: { id: contact.id } }" 

@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import client from "./database.js";
 import cors from "cors";
 import contactsRoute from "../backend/routes/contacts.js";
+import authRoute from "../backend/routes/auth.js";
 import errorHandler from "./middleware/errorHandler.js";
 
 const app = express();
@@ -19,6 +20,7 @@ const connect = async () => {
             console.log(`Server running on port ${port}`);
         });
         app.use("/api/contacts", contactsRoute);
+        app.use("/api/auth", authRoute);
         app.use(errorHandler);
         console.log("Connecté à la base de données :", client.database);
     } catch(error) {

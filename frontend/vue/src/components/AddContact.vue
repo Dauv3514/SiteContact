@@ -10,9 +10,18 @@
     const email = ref('');
     const phone = ref('');
     const poste = ref('');
+    const group_name = ref(
+        ["Amis", 
+        "Famille", 
+        "Collègues", 
+        "Réseau pro", 
+        "Clients", 
+        "Autre"]
+    );
+    const selectedGroup = ref('');
 
     const saveContact = async () => {
-        if (!name.value || !email.value || !phone.value || !poste.value) {
+        if (!name.value || !email.value || !phone.value || !poste.value || !selectedGroup.value) {
             toast.error("Tous les champs sont obligatoires!");
             return;
         }
@@ -21,7 +30,8 @@
                 name: name.value,
                 email: email.value,
                 phone: phone.value,
-                designation: poste.value
+                designation: poste.value,
+                group_name: selectedGroup.value 
             });
             if(response.status === 201) {
                 toast.success('Le contact a été ajouté')
@@ -29,6 +39,7 @@
                 email.value = '';
                 phone.value = '';
                 poste.value = '';
+                selectedGroup.value = '';
             }
         } catch(error) {
             console.error("Erreur lors de l'envoi du contact", error);
@@ -77,6 +88,15 @@
             v-model="poste" 
             placeholder="Entrez le nom de votre poste (métier)"
           ></textarea>
+        </div>
+        <div class="form-group">
+            <label for="poste">Groupe:</label>
+            <select v-model="selectedGroup">
+                <option value="">Sélectionnez un groupe</option>
+                <option v-for="g in group_name" :key="g" :value="g">
+                    {{ g }}
+                </option>
+            </select>
         </div>
   
         <button type="submit" class="submit-btn">Envoyer</button>
