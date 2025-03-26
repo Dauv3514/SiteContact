@@ -1,5 +1,4 @@
 import client from "../database.js";
-import {constants} from "../constants.js"; 
 
 export const getContacts = async (req, res) => {
     try {

@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from 'dotenv';
 import client from "./database.js";
 import cors from "cors";
+import cookieParser from 'cookie-parser';
 import contactsRoute from "../backend/routes/contacts.js";
 import authRoute from "../backend/routes/auth.js";
 import errorHandler from "./middleware/errorHandler.js";
@@ -14,7 +15,11 @@ const connect = async () => {
     try {
         await client.connect();
         app.use(express.json());
-        app.use(cors());
+        app.use(cors({
+            origin: "http://localhost:5173",
+            credentials: true
+        }));
+        app.use(cookieParser()); 
         const port = process.env.port || 3000;
         app.listen (port, () => {
             console.log(`Server running on port ${port}`);

@@ -104,3 +104,23 @@ export const logoutUser = (req, res) => {
         message: "Déconnexion réussie"
     })
 }
+
+export const getMe = (req, res) => {
+    const token = req.cookies.access_token;
+    console.log("Cookies reçus:", req.cookies);  
+    if(!token) {
+        return res.status(401).json({message: "Non authentifié"});
+    }
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log("Token décodé :", decoded);
+        res.status(200).json(
+            {
+                user: decoded,
+                message: "Token valide"
+            }
+        );
+    } catch(err) {
+        res.status(403).json({message: "Token invalide"});
+    }
+}
