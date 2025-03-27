@@ -21,18 +21,23 @@ export const getContacts = async (req, res) => {
 export const newContact = async (req, res, next) => {
     try {
         const {name, email, phone, designation, group_name} = req.body;
+        const user_id = req.user.id;
+
+        if (!user_id) {
+            return res.status(401).json({ error: "Non autorisé. Veuillez vous connecter." });
+        }
         if(!name || !email || !phone || !designation || !group_name) {
             const error = new Error("All fields are required");
             error.statusCode = 400;
             return next(error); 
         }
         const query = `
-            INSERT INTO contacts (name, phone, email, designation, group_name) 
-            VALUES ($1, $2, $3, $4, $5) 
+            INSERT INTO contacts (name, phone, email, designation, group_name, user_id) 
+            VALUES ($1, $2, $3, $4, $5, $6)
             RETURNING *
         `;
         const values = [
-            name, phone, email, designation, group_name
+            name, phone, email, designation, group_name, user_id
         ]
         const {rows} = await client.query(query, values);
         res.status(201).json({

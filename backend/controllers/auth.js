@@ -75,11 +75,15 @@ export const loginUser = async (req, res, next) => {
             return next(error);
         }
 
-        const token = jwt.sign({
-            id: user.id,
-            username: user.username,
-            email: user.email
-        }, process.env.JWT_SECRET);
+        const token = jwt.sign(
+            {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "4h" }
+        );
 
         res.cookie('access_token', token, cookieOptions)
         .status(200).json({
@@ -113,7 +117,6 @@ export const getMe = (req, res) => {
     }
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log("Token décodé :", decoded);
         res.status(200).json(
             {
                 user: decoded,

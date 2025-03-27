@@ -7,11 +7,12 @@ import {
             deleteContact
         } 
     from "../controllers/contacts.js";
+import { verifyToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 router.get("/", getContacts);
-router.post("/", newContact);
+router.post("/", verifyToken, newContact);
 router.put("/:id", updateContact);
 router.get("/:id", getContact);
 router.delete("/:id", deleteContact);
