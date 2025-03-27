@@ -26,13 +26,15 @@
             return;
         }
         try {
-            const response = await axios.post(apiUrl, {
-                name: name.value,
-                email: email.value,
-                phone: phone.value,
-                designation: poste.value,
-                group_name: selectedGroup.value 
-            });
+          const response = await axios.post(apiUrl, {
+            name: name.value,
+            email: email.value,
+            phone: phone.value,
+            designation: poste.value,
+            group_name: selectedGroup.value 
+          }, {
+            withCredentials: true
+          });
             if(response.status === 201) {
                 toast.success('Le contact a été ajouté')
                 name.value = '';

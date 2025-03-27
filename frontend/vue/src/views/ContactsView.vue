@@ -1,12 +1,24 @@
 <script setup>
-    import Header from "../components/Header.vue"
-    import AddContact from "../components/AddContact.vue"
+import { useAuthStore } from "../stores/auth.js";
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+import Header from "../components/Header.vue";
+import AddContact from "../components/AddContact.vue";
+
+const authStore = useAuthStore();
+const router = useRouter();
+
+onMounted(() => {
+    if (!authStore.isAuthenticated) {
+        router.push("/connexion");
+    }
+});
 </script>
 
 <template>
     <div>
-        <Header/>
-        <AddContact/>
+        <Header />
+        <AddContact v-if="authStore.isAuthenticated" />
     </div>
 </template>
 

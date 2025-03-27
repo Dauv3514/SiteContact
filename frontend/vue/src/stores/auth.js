@@ -7,7 +7,6 @@ export const useAuthStore = defineStore('auth', {
     }),
     getters: {
         isAuthenticated: (state) => {
-            console.log('Authentifié:', state.user);
             return !!state.user;
         }
     },
@@ -15,7 +14,6 @@ export const useAuthStore = defineStore('auth', {
         async fetchUser() {
             try {
                 const response = await axios.get('http://localhost:3000/api/auth/me', { withCredentials: true }); 
-                console.log('Utilisateur récupéré:', response.data.user);
                 this.user = response.data.user;
             } catch (error) {
                 this.user = null;
