@@ -84,7 +84,7 @@ export const getContact = async (req, res, next) => {
     }
 }
 
-export const updateContact = async (req, res) => {
+export const updateContact = async (req, res, next) => {
     try {
         const contactId = req.params.id;
         const { name, email, phone, designation, group_name } = req.body;
@@ -97,9 +97,10 @@ export const updateContact = async (req, res) => {
         const query = `
             UPDATE contacts
             SET name = $1, phone = $2, email = $3, designation = $4, group_name = $5
-            WHERE id = $5
+            WHERE id = $6
             RETURNING *
         `
+
         const {rows} = await client.query(query, [name, phone, email, designation, group_name, contactId]);
         res.status(200).json({
             message: "Update contact",
@@ -107,6 +108,7 @@ export const updateContact = async (req, res) => {
             result: rows[0],
         })
     } catch(err) {
+        console.error('Error in updateContact:', err);
         next(err);
     }
 }

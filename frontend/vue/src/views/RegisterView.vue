@@ -20,7 +20,7 @@
         password: password.value
       };
 
-      const response = await axios.post(url, payload, { withCredentials: true });
+      const response = await axios.post(url, payload);
       if (response.data.success) {
         authStore.user = response.data.user;
         router.push('/');

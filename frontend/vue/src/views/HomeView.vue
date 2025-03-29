@@ -25,7 +25,7 @@
 
     const getContacts = async () => {
         try {
-            const response = await axios.get(apiUrl, { withCredentials: true });
+            const response = await axios.get(apiUrl);
             contacts.value = response.data.allcontacts;
         } catch (error) {
             console.error("Erreur lors de la récupération des contacts :", error);
@@ -52,7 +52,7 @@
     const addFavorisContact = async(id) => {
         try {
             const url = `http://localhost:3000/api/favoris/${id}`;
-            const response = await axios.patch(url, {}, { withCredentials: true });
+            const response = await axios.patch(url);
             if(response.status === 200) {
                 if(response.data.favoris.favoris === true) {
                 toast.success("Le contact a été ajouté dans les favoris");

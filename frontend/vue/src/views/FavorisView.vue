@@ -25,7 +25,7 @@
 
     const getContacts = async () => {
         try {
-            const response = await axios.get(apiUrl, { withCredentials: true });
+            const response = await axios.get(apiUrl);
             contacts.value = response.data.allcontacts;
         } catch (error) {
             console.error("Erreur lors de la récupération des contacts :", error);
@@ -52,7 +52,7 @@
     const addFavorisContact = async(id) => {
         try {
             const url = `http://localhost:3000/api/favoris/${id}`;
-            const response = await axios.patch(url, {}, { withCredentials: true });
+            const response = await axios.patch(url);
             if(response.status === 200) {
                 if(response.data.favoris.favoris === true) {
                 toast.success("Le contact a été ajouté dans les favoris");
@@ -86,12 +86,12 @@
       <div v-else>
         <div class="message-container" v-if="!authStore.isAuthenticated">
           <h2>Tableau de démonstration</h2>
-          <p class="info-message">Pour ajouter un favori retourne sur la page d'accueil</p>
+          <p class="info-message">Pour ajouter un contact favori retourne sur la page d'accueil</p>
         </div>
         
         <div class="message-container" v-else-if="authStore.isAuthenticated && contacts.length === 0">
           <h2>Aucun contacts dans tes favoris pour le moment</h2>
-          <p class="info-message">Pour ajouter un favori retourne sur la page d'accueil</p>
+          <p class="info-message">Pour ajouter un contact favori retourne sur la page d'accueil</p>
         </div>
         <ContactList 
           :contacts="authStore.isAuthenticated ? contacts : fakeContacts" 

@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth', {
     actions: {
         async fetchUser() {
             try {
-                const response = await axios.get('http://localhost:3000/api/auth/me', { withCredentials: true }); 
+                const response = await axios.get('http://localhost:3000/api/auth/me'); 
                 this.user = response.data.user;
             } catch (error) {
                 this.user = null;
@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', {
         },
         async logout() {
             try {
-                await axios.post('http://localhost:3000/api/auth/deconnexion', {}, { withCredentials: true });
+                await axios.post('http://localhost:3000/api/auth/deconnexion');
                 this.user = null;
             } catch (error) {
                 console.error("Erreur lors de la déconnexion", error);
