@@ -1,6 +1,6 @@
 import express from "express";
 import {
-            getContacts, 
+            getContacts,
             newContact,
             getContact, 
             updateContact, 
@@ -11,7 +11,7 @@ import { verifyToken } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", getContacts);
+router.get("/", verifyToken, getContacts);
 router.post("/", verifyToken, newContact);
 router.put("/:id", updateContact);
 router.get("/:id", getContact);

@@ -1,13 +1,15 @@
 import client from "../database.js";
 
 export const getContacts = async (req, res) => {
+    const user_id = req.user.id;
     try {
         const query = `
             SELECT name, phone, email, designation, created_at, group_name, id
             FROM contacts
+            WHERE user_id = $1
             ORDER BY group_name ASC
         `
-        const {rows} = await client.query(query);
+        const {rows} = await client.query(query, [user_id]);
         res.status(200).json({
             success: true,
             message: "Get All contacts",
@@ -29,7 +31,7 @@ export const newContact = async (req, res, next) => {
         if(!name || !email || !phone || !designation || !group_name) {
             const error = new Error("All fields are required");
             error.statusCode = 400;
-            return next(error); 
+            return next(error);
         }
         const query = `
             INSERT INTO contacts (name, phone, email, designation, group_name, user_id) 

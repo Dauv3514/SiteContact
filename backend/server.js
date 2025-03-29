@@ -4,6 +4,7 @@ import client from "./database.js";
 import cors from "cors";
 import cookieParser from 'cookie-parser';
 import contactsRoute from "../backend/routes/contacts.js";
+import favorisRoute from "../backend/routes/favoris.js";
 import authRoute from "../backend/routes/auth.js";
 import errorHandler from "./middleware/errorHandler.js";
 
@@ -24,6 +25,7 @@ const connect = async () => {
         app.listen (port, () => {
             console.log(`Server running on port ${port}`);
         });
+        app.use("/api/favoris", favorisRoute);
         app.use("/api/contacts", contactsRoute);
         app.use("/api/auth", authRoute);
         app.use(errorHandler);
