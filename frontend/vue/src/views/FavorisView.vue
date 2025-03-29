@@ -7,7 +7,7 @@
     import { useToast } from "vue-toastification";
     import { useAuthStore } from "../stores/auth.js";
 
-    const apiUrl = "http://localhost:3000/api/contacts";
+    const apiUrl = "http://localhost:3000/api/favoris";
     const authStore = useAuthStore();
 
     const toast = useToast();
@@ -15,12 +15,12 @@
     const loading = ref(true);
 
     const fakeContacts = [
-        { id: 1, name: "Jean Dupont", email: "jean.dupont@example.com", phone: "123456789", designation: "Développeur", group_name: "Amis" },
-        { id: 2, name: "Marie Curie", email: "marie.curie@example.com", phone: "987654321", designation: "Scientifique", group_name: "Famille" },
-        { id: 3, name: "Albert Einstein", email: "albert.einstein@example.com", phone: "456123789", designation: "Physicien", group_name: "Collègues" },
-        { id: 4, name: "Isaac Newton", email: "isaac.newton@example.com", phone: "321654987", designation: "Mathematique", group_name: "Réseau pro" },
-        { id: 5, name: "Charles Darwin", email: "charles.darwin@example.com", phone: "654987321", designation: "Biologiste", group_name: "Clients" },
-        { id: 6, name: "Nikola Tesla", email: "nikola.tesla@example.com", phone: "987321654", designation: "Ingénieur", group_name: "Autre" }
+    { id: 1, name: "Jean Dupont", email: "jean.dupont@example.com", phone: "123456789", designation: "Développeur", group_name: "Amis" },
+    { id: 2, name: "Marie Curie", email: "marie.curie@example.com", phone: "987654321", designation: "Scientifique", group_name: "Famille" },
+    { id: 3, name: "Albert Einstein", email: "albert.einstein@example.com", phone: "456123789", designation: "Physicien", group_name: "Collègues" },
+    { id: 4, name: "Isaac Newton", email: "isaac.newton@example.com", phone: "321654987", designation: "Mathematique", group_name: "Réseau pro" },
+    { id: 5, name: "Charles Darwin", email: "charles.darwin@example.com", phone: "654987321", designation: "Biologiste", group_name: "Clients" },
+    { id: 6, name: "Nikola Tesla", email: "nikola.tesla@example.com", phone: "987321654", designation: "Ingénieur", group_name: "Autre" }
     ];
 
     const getContacts = async () => {
@@ -34,7 +34,7 @@
         }
     };
 
-    const deleteContact = async(id) => {
+    const deleteContact = async (id) => {
         try {
             const url = `http://localhost:3000/api/contacts/${id}`;
             const confirmation = confirm('Es-tu sûr de supprimer le contact ?');
@@ -86,17 +86,17 @@
       <div v-else>
         <div class="message-container" v-if="!authStore.isAuthenticated">
           <h2>Tableau de démonstration</h2>
-          <p class="info-message">Connecte-toi pour pouvoir ajouter tes premiers contacts.</p>
+          <p class="info-message">Pour ajouter un favori retourne sur la page d'accueil</p>
         </div>
         
         <div class="message-container" v-else-if="authStore.isAuthenticated && contacts.length === 0">
-          <h2>Tu n'as ajouté aucun contact pour le moment</h2>
-          <p class="info-message">Crée un contact pour afficher tes propres contacts</p>
+          <h2>Aucun contacts dans tes favoris pour le moment</h2>
+          <p class="info-message">Pour ajouter un favori retourne sur la page d'accueil</p>
         </div>
         <ContactList 
           :contacts="authStore.isAuthenticated ? contacts : fakeContacts" 
-          @deleteContact="deleteContact"
-          @addFavorisContact="addFavorisContact" 
+          @deleteContact="deleteContact" 
+          @addFavorisContact="addFavorisContact"
         />
       </div>
     </div>
@@ -105,7 +105,7 @@
 
 <style scoped>
     .container {
-        max-width: 1000px;
+        max-width: 900px;
         margin: 60px auto;
         padding: 20px;
         background: white;

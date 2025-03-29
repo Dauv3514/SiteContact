@@ -4,7 +4,15 @@ export const getContacts = async (req, res) => {
     const user_id = req.user.id;
     try {
         const query = `
-            SELECT name, phone, email, designation, created_at, group_name, id
+            SELECT 
+                name, 
+                phone, 
+                email, 
+                designation, 
+                created_at,
+                group_name,
+                favoris,
+                id
             FROM contacts
             WHERE user_id = $1
             ORDER BY group_name ASC
@@ -34,12 +42,12 @@ export const newContact = async (req, res, next) => {
             return next(error);
         }
         const query = `
-            INSERT INTO contacts (name, phone, email, designation, group_name, user_id) 
-            VALUES ($1, $2, $3, $4, $5, $6)
+            INSERT INTO contacts (name, phone, email, designation, group_name, user_id, favoris) 
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
             RETURNING *
         `;
         const values = [
-            name, phone, email, designation, group_name, user_id
+            name, phone, email, designation, group_name, user_id, false
         ]
         const {rows} = await client.query(query, values);
         res.status(201).json({

@@ -22,7 +22,7 @@ export const getFavoris = async (req, res, next) => {
 
 export const addToFavoris = async (req, res, next) => {
     const user_id = req.user.id;
-    const contactId = req.params.id;;
+    const contactId = req.params.id;
 
     if (!contactId) {
         return res.status(400).json({

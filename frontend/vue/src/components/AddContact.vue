@@ -5,7 +5,7 @@
 
     const toast = useToast();
     const apiUrl = 'http://localhost:3000/api/contacts';
-
+    
     const name = ref('');
     const email = ref('');
     const phone = ref('');

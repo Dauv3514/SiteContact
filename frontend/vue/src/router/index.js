@@ -4,6 +4,7 @@ import ContactsView from "../views/ContactsView.vue"
 import LoginView from "@/views/LoginView.vue"
 import RegisterView from "@/views/RegisterView.vue"
 import EditContact from "@/components/EditContact.vue"
+import GetFavoris from "@/views/FavorisView.vue"
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,11 @@ const router = createRouter({
             path: "/contact/:id",
             name: "editContact",
             component: EditContact
+        },
+        {
+            path: "/favoris",
+            name: "getFavoris",
+            component: GetFavoris
         }
     ]
 })

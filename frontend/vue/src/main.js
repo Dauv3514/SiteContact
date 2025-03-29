@@ -5,6 +5,10 @@ import App from './App.vue'
 import Toast from 'vue-toastification'
 import "vue-toastification/dist/index.css"; 
 import router from './router/index.js'
+import axios from 'axios'
+
+axios.defaults.withCredentials = true
+axios.defaults.baseURL = 'http://localhost:3000'
 
 const app = createApp(App);
 const pinia = createPinia();

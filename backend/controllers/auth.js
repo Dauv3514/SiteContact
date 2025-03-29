@@ -111,7 +111,6 @@ export const logoutUser = (req, res) => {
 
 export const getMe = (req, res) => {
     const token = req.cookies.access_token;
-    console.log("Cookies reçus:", req.cookies);  
     if(!token) {
         return res.status(401).json({message: "Non authentifié"});
     }

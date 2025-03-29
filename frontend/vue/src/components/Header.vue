@@ -10,7 +10,8 @@
 
   const links = ref([
     { name: "Accueil", path: "/" },
-    { name: "Créer un contact", path: "/contacts" }
+    { name: "Créer un contact", path: "/contacts" },
+    { name: "Mes contacts favoris", path: "/favoris" }
   ]);
 
   const toggleMenu = () => {

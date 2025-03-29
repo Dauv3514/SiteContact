@@ -10,7 +10,7 @@
         },
     });
 
-    const emit = defineEmits(["deleteContact"]);
+    const emit = defineEmits(["deleteContact", "addFavorisContact"]);
 </script>
 
 <template>
@@ -22,9 +22,7 @@
         <th>Téléphone</th>
         <th>Poste</th>
         <th>Groupe</th>
-        <div v-if="authStore.isAuthenticated">
-            <th>Actions</th>
-        </div>
+        <th v-if="authStore.isAuthenticated">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -34,19 +32,22 @@
         <td>{{ contact.phone }}</td>
         <td>{{ contact.designation }}</td>
         <td>{{ contact.group_name }}</td>
-        <div v-if="authStore.isAuthenticated">
-            <td>
-            <router-link 
-                :to="{ name: 'editContact', params: { id: contact.id } }" 
-                class="btn btn-edit"
-            >
-                Edit
-            </router-link>
-            <button @click="$emit('deleteContact', contact.id)" class="btn btn-danger">
-                Delete
-            </button>
-            </td>
-        </div>
+        <td v-if="authStore.isAuthenticated">
+            <div class="boutons-actions">
+                <button @click="$emit('addFavorisContact', contact.id)" class="btn btn-favoris">
+                    {{ contact.favoris ? "Retirer des favoris" : "Ajouter aux favoris" }} 
+                </button>
+                <router-link 
+                    :to="{ name: 'editContact', params: { id: contact.id } }" 
+                    class="btn btn-edit"
+                >
+                    Modifier
+                </router-link>
+                <button @click="$emit('deleteContact', contact.id)" class="btn btn-danger">
+                    Supprimer
+                </button>
+            </div>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -54,59 +55,75 @@
 
 <style scoped>
     .table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 8px;
-    overflow: hidden;
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
     }
 
     .table thead {
-    background-color: grey;
-    color: white;
-    text-align: left;
+        background-color: grey;
+        color: white;
+        text-align: left;
     }
 
     .table th,
     .table td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #ddd;
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
     }
 
     .table tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
+        background-color: #f9f9f9;
     }
 
     .table tbody tr:hover {
-    background-color: #e6e6e6;
+        background-color: #e6e6e6;
+    }
+
+    .boutons-actions {
+        display: flex;
+        gap: 6px;
     }
 
     .btn {
-    padding: 6px 12px;
-    margin-right: 5px;
-    border-radius: 4px;
-    text-decoration: none;
-    display: inline-block;
-    transition: 0.3s;
-    cursor: pointer;
+        padding: 3px 6px;
+        margin-right: 5px;
+        border-radius: 4px;
+        text-decoration: none;
+        display: inline-block;
+        transition: 0.3s;
+        cursor: pointer;
     }
 
     .btn-edit {
-    background-color: #007bff;
-    color: white;
+        background-color: #007bff;
+        color: white;
+        font-size: 14px;
     }
 
     .btn-edit:hover {
-    background-color: #0056b3;
+        background-color: #0056b3;
     }
 
     .btn-danger {
-    background-color: #dc3545;
-    color: white;
-    border: none;
+        background-color: #dc3545;
+        color: white;
+        border: none;
     }
 
     .btn-danger:hover {
-    background-color: #a71d2a;
+        background-color: #a71d2a;
+    }
+
+    .btn-favoris {
+        background-color: #cdd00a;
+        color: white;
+        border: none;
+    }
+
+    .btn-favoris:hover {
+        background-color: #cdd00a;
     }
 </style>
