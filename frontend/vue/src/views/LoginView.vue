@@ -80,7 +80,7 @@
 
   .form h1 {
     margin: 0 0 30px;
-    color: #003e66;
+    color: #333;
     font-size: 24px;
     font-weight: 500;
   }
@@ -100,7 +100,7 @@
   .form button {
     text-transform: uppercase;
     outline: 0;
-    background: #003e66;
+    background: #333;
     width: 100%;
     border: 0;
     padding: 15px;
@@ -113,7 +113,7 @@
   }
 
   .form button:hover {
-    background: #003e66;
+    background: #333;
   }
 
   .form button:disabled {
@@ -123,18 +123,18 @@
 
   .form .message {
     margin: 15px 0 0;
-    color: #b3b3b3;
+    color: #333;
     font-size: 12px;
   }
 
   .form .message a {
-    color: #003e66;
+    color: #333;
     text-decoration: none;
     font-weight: 600;
   }
 
   .error-message {
-    color: #003e66;
+    color: #333;
     margin-bottom: 20px;
     font-size: 14px;
     background: #ffebee;

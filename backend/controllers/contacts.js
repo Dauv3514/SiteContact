@@ -1,4 +1,5 @@
 import client from "../database.js";
+import csv from "express-csv";
 
 export const getContacts = async (req, res) => {
     const user_id = req.user.id;
@@ -133,6 +134,41 @@ export const deleteContact = async (req, res, next) => {
             result: rows[0],
         })
     } catch(err) {
+        next(err);
+    }
+}
+
+export const exportContacts = async (req, res, next) => {
+    const user_id = req.user.id;
+    try {
+        const query = `
+            SELECT name, phone, email, designation, group_name
+            FROM contacts
+            WHERE user_id = $1
+            ORDER BY group_name ASC
+        `;
+        const { rows } = await client.query(query, [user_id]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: "Aucun contact trouvé." });
+        }
+
+        const csvData = [
+            ["Nom", "Téléphone", "Email", "Poste", "Groupe"],
+            ...rows.map(contact => [
+                contact.name,
+                contact.phone,
+                contact.email,
+                contact.designation,
+                contact.group_name,
+            ])
+        ];
+        
+        res.setHeader("Content-Type", "text/csv");
+        res.setHeader("Content-Disposition", "attachment; filename=contacts.csv");
+        res.csv(csvData);
+    } catch (err) {
+        console.error("Erreur lors de l'export des contacts:", err);
         next(err);
     }
 }

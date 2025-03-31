@@ -72,7 +72,7 @@
 
   .form h1 {
     margin: 0 0 30px;
-    color: #003e66;
+    color: #333;
     font-size: 24px;
     font-weight: 500;
   }
@@ -92,7 +92,7 @@
   .form button {
     text-transform: uppercase;
     outline: 0;
-    background: #003e66;
+    background: #333;
     width: 100%;
     border: 0;
     padding: 15px;
@@ -105,7 +105,7 @@
   }
 
   .form button:hover {
-    background: #003e66;
+    background: #333;
   }
 
   .form .message {
@@ -115,13 +115,13 @@
   }
 
   .form .message a {
-    color: #003e66;
+    color: #333;
     text-decoration: none;
     font-weight: 600;
   }
 
   .form p {
-    color: #003e66;
+    color: #333;
   }
 
   .profile-icon {

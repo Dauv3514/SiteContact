@@ -160,7 +160,7 @@
     
     .submit-btn {
         padding: 10px 20px;
-        background-color: #007bff;
+        background-color: #333;
         color: white;
         border: none;
         border-radius: 4px;
@@ -170,6 +170,6 @@
     }
     
     .submit-btn:hover {
-        background-color: #0056b3;
+        background-color: #333;
     }
   </style>
