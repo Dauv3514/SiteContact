@@ -1,5 +1,4 @@
 import client from "../database.js";
-import csv from "express-csv";
 
 export const getContacts = async (req, res) => {
     const user_id = req.user.id;
@@ -163,10 +162,11 @@ export const exportContacts = async (req, res, next) => {
                 contact.group_name,
             ])
         ];
-        
-        res.setHeader("Content-Type", "text/csv");
+
+        const csvContent = "\uFEFF" + csvData.map(row => row.join(",")).join("\n");
+        res.setHeader("Content-Type", "text/csv; charset=utf-8");
         res.setHeader("Content-Disposition", "attachment; filename=contacts.csv");
-        res.csv(csvData);
+        res.send(csvContent);
     } catch (err) {
         console.error("Erreur lors de l'export des contacts:", err);
         next(err);

@@ -68,6 +68,26 @@
         }
     }
 
+    const downloadCSV = async() => {
+        try {
+            const url = `http://localhost:3000/api/contacts/export-csv`;
+            const response = await axios.get(url, { responseType: "blob" });
+            if(response.status === 200) {
+                const blob = new Blob([response.data], { type: "text/csv" });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute("download", "contacts.csv"); 
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                toast.success("Le téléchargement a bien été effectué");
+            }
+        } catch(err) {
+            console.error("Erreur lors du téléchargement en CSV", err);
+            toast.error("Erreur lors du téléchargement du fichier CSV");
+        }
+    }
+
     watch(() => authStore.isAuthenticated, async (newValue) => {
         loading.value = true;
         if (newValue) {
@@ -98,6 +118,9 @@
           @deleteContact="deleteContact"
           @addFavorisContact="addFavorisContact" 
         />
+        <div class="containerBtnCSV" v-if="authStore.isAuthenticated && contacts.length > 0">
+         <button @click="downloadCSV" class="btn-csv">Télécharger en CSV</button>
+        </div>
       </div>
     </div>
   </div>
@@ -141,35 +164,6 @@
         background-color: #e6e6e6;
     }
 
-    .btn {
-        padding: 6px 12px;
-        margin-right: 5px;
-        border-radius: 4px;
-        text-decoration: none;
-        display: inline-block;
-        transition: 0.3s;
-        cursor: pointer;
-    }
-
-    .btn-edit {
-        background-color: #007bff;
-        color: white;
-    }
-
-    .btn-edit:hover {
-        background-color: #0056b3;
-    }
-
-    .btn-danger {
-        background-color: #dc3545;
-        color: white;
-        border: none;
-    }
-
-    .btn-danger:hover {
-        background-color: #a71d2a;
-    }
-
     .message-container {
         text-align: center;
         margin-bottom: 20px;
@@ -188,5 +182,27 @@
     h2 {
         color: #333;
         margin-bottom: 15px;
+    }
+
+    .containerBtnCSV {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .btn-csv{
+        background-color: #333;
+        color: white;
+        border-radius: 8px;
+        border: none;
+        padding: 3px 6px;
+        margin-right: 5px;
+        text-decoration: none;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .btn-csv:hover {
+        background-color: #333;
     }
 </style>
