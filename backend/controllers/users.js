@@ -50,7 +50,7 @@ export const getAllUsersConnected = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "Récupération des utilisateurs connectés",
-            user: rows
+            users: rows
         })
 
     } catch(err) {

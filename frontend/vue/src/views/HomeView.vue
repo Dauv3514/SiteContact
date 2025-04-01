@@ -1,6 +1,7 @@
 <script setup>
     import Header from "../components/Header.vue";
     import ContactList from "../components/ContactList.vue";
+    import UsersConnected from "../components/UsersConnected.vue";
     import axios from "axios";
     import { ref, watch } from "vue";
     import CLipLoader from "vue-spinner/src/ClipLoader.vue";
@@ -116,12 +117,15 @@
         <ContactList 
           :contacts="authStore.isAuthenticated ? contacts : fakeContacts" 
           @deleteContact="deleteContact"
-          @addFavorisContact="addFavorisContact" 
+          @addFavorisContact="addFavorisContact"
         />
         <div class="containerBtnCSV" v-if="authStore.isAuthenticated && contacts.length > 0">
          <button @click="downloadCSV" class="btn-csv">Télécharger en CSV</button>
         </div>
       </div>
+    </div>
+    <div class="containerUserConnected" v-if="authStore.isAuthenticated">
+        <UsersConnected />
     </div>
   </div>
 </template>
@@ -129,7 +133,7 @@
 <style scoped>
     .container {
         max-width: 1000px;
-        margin: 60px auto;
+        margin: 100px auto;
         padding: 20px;
         background: white;
         border-radius: 8px;
