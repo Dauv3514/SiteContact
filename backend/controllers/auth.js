@@ -2,17 +2,25 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import client from "../database.js"
 
+const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: '/'
+};
+
 export const registerUser = async (req, res, next) => {
     const { username, email, password } = req.body;
+    const profileImage = req.file ? req.file.filename : null;
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
     
     const query= `
-        INSERT INTO users (username, email, password) 
-        VALUES ($1, $2, $3) 
+        INSERT INTO users (username, email, password, profile_image, is_online) 
+        VALUES ($1, $2, $3, $4, TRUE)
         RETURNING *
     `;
-    const values = [username, email, hashedPassword];
+    const values = [username, email, hashedPassword, profileImage];
 
     try {
         const usernameQuery = `SELECT * FROM users WHERE username = $1`;
@@ -34,22 +42,35 @@ export const registerUser = async (req, res, next) => {
         }
 
         const {rows} = await client.query(query, values);
-        return res.status(200).json({
-            success: true, 
+        const user = rows[0];
+        const token = jwt.sign(
+            {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: "4h" }
+        );
+
+        res.cookie('access_token', token, cookieOptions)
+        .status(200).json({
+            success: true,
             message: "Inscription réussie",
-            user: rows[0]
-        })
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                profile_image: user.profile_image,
+                isOnline: user.is_online
+            }
+        });
+        
     } catch(err) {
+        console.error("Erreur lors de l'inscription :", err);
         next(err);
     }
 }
-
-const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    path: '/'
-};
 
 export const loginUser = async (req, res, next) => {
     const {username, password} = req.body;
@@ -75,6 +96,9 @@ export const loginUser = async (req, res, next) => {
             return next(error);
         }
 
+        const updateOnlineStatusQuery = `UPDATE users SET is_online = TRUE WHERE id = $1`;
+        await client.query(updateOnlineStatusQuery, [user.id]);
+
         const token = jwt.sign(
             {
                 id: user.id,
@@ -92,7 +116,8 @@ export const loginUser = async (req, res, next) => {
             user: {
                 id: user.id,
                 username: user.username,
-                email: user.email
+                email: user.email,
+                isOnline: user.is_online
             }
         });
     }
@@ -101,12 +126,23 @@ export const loginUser = async (req, res, next) => {
     }
 }
 
-export const logoutUser = (req, res) => {
-    res.clearCookie('access_token', cookieOptions)
-    .status(200).json({
-        success: true,
-        message: "Déconnexion réussie"
-    })
+export const logoutUser = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const updateOnlineStatusQuery = `UPDATE users SET is_online = FALSE WHERE id = $1`;
+        await client.query(updateOnlineStatusQuery, [userId]);
+
+        res.clearCookie('access_token', cookieOptions)
+        .status(200).json({
+            success: true,
+            message: "Déconnexion réussie",
+            isOnline: updateOnlineStatusQuery.isOnline
+        })
+
+    } catch(err) {
+        res.status(403).json({ message: "Token invalide" });
+    }
 }
 
 export const getMe = (req, res) => {

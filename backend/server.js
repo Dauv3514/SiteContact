@@ -6,7 +6,11 @@ import cookieParser from 'cookie-parser';
 import contactsRoute from "../backend/routes/contacts.js";
 import favorisRoute from "../backend/routes/favoris.js";
 import authRoute from "../backend/routes/auth.js";
+import usersRoute from "../backend/routes/users.js";
 import errorHandler from "./middleware/errorHandler.js";
+import { fileURLToPath } from 'url';
+import path from "path"; 
+import { dirname } from 'path';
 
 const app = express();
 dotenv.config();
@@ -25,9 +29,14 @@ const connect = async () => {
         app.listen (port, () => {
             console.log(`Server running on port ${port}`);
         });
+
+        const __filename = fileURLToPath(import.meta.url);
+        const __dirname = dirname(__filename);
+        app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
         app.use("/api/favoris", favorisRoute);
         app.use("/api/contacts", contactsRoute);
         app.use("/api/auth", authRoute);
+        app.use("/api/users", usersRoute);
         app.use(errorHandler);
         console.log("Connecté à la base de données :", client.database);
     } catch(error) {

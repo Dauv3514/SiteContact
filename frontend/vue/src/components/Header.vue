@@ -1,18 +1,47 @@
 <script setup>
-  import { ref } from "vue";
+  import { ref, computed, onMounted } from "vue";
   import { useRoute, useRouter } from "vue-router";
   import { useAuthStore } from "../stores/auth";
+  import axios from "axios";
 
   const route = useRoute();
   const router = useRouter();
   const isMenuOpen = ref(false);
   const authStore = useAuthStore();
+  const userData = ref(null);
 
   const links = ref([
     { name: "Accueil", path: "/" },
     { name: "Créer un contact", path: "/contacts" },
     { name: "Mes contacts favoris", path: "/favoris" }
   ]);
+
+  // On effectue la requête API une fois que le composant est monté
+  onMounted(async () => {
+    if (authStore.isAuthenticated) {
+      try {
+        const apiUrl = "http://localhost:3000/api/users";
+        const response = await axios.get(apiUrl);
+
+        if (response.data.success) {
+          userData.value = response.data.user; // On stocke les données de l'utilisateur
+        }
+      } catch (error) {
+        console.error("Erreur de récupération de l'image de profil:", error);
+      }
+    }
+  });
+
+  // Calculer l'URL de l'image de profil en fonction des données utilisateur
+  const profileImage = computed(() => {
+    return userData.value ? `http://localhost:3000/api/uploads/${userData.value.profile_image}` : null;
+  });
+
+  // const profileImage = computed(() => {
+  //   return response.value && response.value.user 
+  //   ? `/api/uploads/${response.value.user.profile_image}` 
+  //   : null;
+  // });
 
   const toggleMenu = () => {
     isMenuOpen.value = !isMenuOpen.value;
@@ -50,6 +79,12 @@
     </ul>
 
     <div class="nav-right">
+      <img 
+        v-if="profileImage" 
+        :src="profileImage" 
+        alt="Photo de profil"
+        class="profilImage"
+      />
       <button v-if="authStore.isAuthenticated" class="logout-button" @click="logout">Déconnexion</button>
       <div v-else>
         <button class="login-button" @click="login">Connexion</button>
@@ -124,7 +159,7 @@
   .nav-right {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 0px;
   }
 
   .logout-button, .login-button {
@@ -153,6 +188,14 @@
 
   .mobile-menu {
     display: none;
+  }
+
+  .profilImage {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #ddd;
   }
 
   @media screen and (max-width: 768px) {
