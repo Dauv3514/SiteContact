@@ -106,7 +106,7 @@
 <style scoped>
     .container {
         max-width: 900px;
-        margin: 60px auto;
+        margin: 100px auto;
         padding: 20px;
         background: white;
         border-radius: 8px;

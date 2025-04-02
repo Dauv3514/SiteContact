@@ -2,9 +2,11 @@
   import { ref, onMounted, computed } from "vue";
   import axios from "axios";
   import {useRouter} from 'vue-router';
-  const router = useRouter();
+  import { useChatStore } from '../stores/chat';
 
+  const router = useRouter();
   const usersConnected = ref([]);
+  const chatStore = useChatStore();
 
   const numberOfUsersConnected = computed(() => 
     usersConnected.value.length
@@ -30,7 +32,8 @@
     return `http://localhost:3000/api/uploads/${profileImage}`;
   }
 
-  const chat = ()=> {
+  const chat = (user) => {
+    chatStore.setTargetUser(user);
     router.push({name: 'chat'});
   }
 </script>
@@ -44,10 +47,10 @@
     
     <div class="users-list">
       <div 
-        class="user-item" 
+        class="user-item"
         v-for="user in usersConnected" 
         :key="user.id"
-        @click="chat"
+        @click="chat(user)"
       >
         <img 
           :src="getProfileImage(user.profile_image)" 

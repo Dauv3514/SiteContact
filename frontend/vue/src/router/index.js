@@ -4,7 +4,7 @@ import ContactsView from "../views/ContactsView.vue"
 import LoginView from "@/views/LoginView.vue"
 import RegisterView from "@/views/RegisterView.vue"
 import EditContact from "@/components/EditContact.vue"
-import Chat from "@/components/Chat.vue"
+import ChatView from "@/views/ChatView.vue"
 import GetFavoris from "@/views/FavorisView.vue"
 
 const router = createRouter({
@@ -43,7 +43,7 @@ const router = createRouter({
         {
             path: "/chat",
             name: "chat",
-            component: Chat
+            component: ChatView
         },
     ]
 })
