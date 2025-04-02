@@ -57,6 +57,7 @@ export const registerUser = async (req, res, next) => {
         .status(200).json({
             success: true,
             message: "Inscription réussie",
+            token: token,
             user: {
                 id: user.id,
                 username: user.username,
@@ -113,6 +114,7 @@ export const loginUser = async (req, res, next) => {
         .status(200).json({
             success: true,
             message: "Connexion réussie",
+            token: token,
             user: {
                 id: user.id,
                 username: user.username,
@@ -154,7 +156,9 @@ export const getMe = (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         res.status(200).json(
             {
+                success: true,
                 user: decoded,
+                token: token,
                 message: "Token valide"
             }
         );

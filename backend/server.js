@@ -11,8 +11,12 @@ import errorHandler from "./middleware/errorHandler.js";
 import { fileURLToPath } from 'url';
 import path from "path"; 
 import { dirname } from 'path';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import initializeSocket from './socket/index.js'; 
 
 const app = express();
+const server = createServer(app); 
 dotenv.config();
 
 
@@ -26,18 +30,30 @@ const connect = async () => {
         }));
         app.use(cookieParser()); 
         const port = process.env.port || 3000;
-        app.listen (port, () => {
-            console.log(`Server running on port ${port}`);
-        });
 
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = dirname(__filename);
+       
         app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
         app.use("/api/favoris", favorisRoute);
         app.use("/api/contacts", contactsRoute);
         app.use("/api/auth", authRoute);
         app.use("/api/users", usersRoute);
         app.use(errorHandler);
+
+        const io = new Server(server, {
+            cors: {
+                origin: "http://localhost:5173",
+                credentials: true
+            }
+        });
+        
+        initializeSocket(io);
+
+        server.listen(port, () => {
+            console.log(`Server running on port ${port}`);
+        });
+
         console.log("Connecté à la base de données :", client.database);
     } catch(error) {
         console.log(error, "Erreur lors de connexion à la BDD")
