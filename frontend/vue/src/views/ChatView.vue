@@ -1,12 +1,13 @@
 <script setup>
     import { useSocketStore } from '../stores/socket';
     import { useChatStore } from '../stores/chat';
-    import { onMounted, onUnmounted } from 'vue';
+    import { ref, onMounted, onUnmounted } from 'vue';
     import { useRouter } from 'vue-router';
 
     const socketStore = useSocketStore();
     const chatStore = useChatStore();
     const router = useRouter();
+    const messageInput = ref('');
 
     if (!chatStore.targetUser) {
         router.push({ name: 'home' });
@@ -19,8 +20,36 @@
         return `http://localhost:3000/api/uploads/${profileImage}`;
     };
 
+    const sendMessage = () => {
+        if(!messageInput.value.trim()) {
+            return;
+        };
+        // Créer le message
+        const messageData = {
+            recipient_id: chatStore.targetUser.id,
+            content: messageInput.value.trim()
+        };
+         // Envoyer via socket
+         socketStore.socket.emit('chat message', messageData);
+         console.log('Message envoyé :', messageData);
+        
+        // Ajouter au store local
+        chatStore.addMessage({
+            content: messageInput.value.trim(),
+            isOwn: true // message envoyé
+        });
+        
+        messageInput.value = '';
+    };
+
     onMounted(() => {
         socketStore.initSocket();
+        socketStore.socket?.on('private_message', (message) => {
+            chatStore.addMessage({
+                ...message,
+                isOwn: false
+            });
+        });
     });
     onUnmounted(() => {
         socketStore.socket?.disconnect();
@@ -51,16 +80,25 @@
         <div class="chat-content">
             <div class="messages-container" ref="messagesContainer">
                 <div class="message-list">
+                    <div 
+                        v-for="message in chatStore.messages"
+                        :key="message.id"
+                        :class="['message', message.isOwn ? 'message-sent' : 'message-received']"
+                    >
+                        {{ message.content }}
+                    </div>
                 </div>
             </div>
 
             <div class="chat-input-container">
-                <input 
+                <input
+                    v-model="messageInput"
                     type="text" 
                     class="message-input"
+                    @keyup.enter="sendMessage"
                     placeholder="Écrivez votre message..."
                 />
-                <button class="send-button">
+                <button @click="sendMessage" class="send-button">
                     Envoyer
                 </button>
             </div>
@@ -181,5 +219,26 @@
     .username {
         color: #333;
         font-weight: 500;
+    }
+
+    .message {
+        padding: 10px;
+        margin: 8px;
+        max-width: 70%;
+        border-radius: 10px;
+    }
+
+    .message-sent {
+        background-color: #333;
+        color: white;
+        align-self: flex-end;
+        margin-left: auto;
+    }
+
+    .message-received {
+        background-color: #e9ecef;
+        color: #333;
+        align-self: flex-start;
+        margin-right: auto;
     }
 </style>

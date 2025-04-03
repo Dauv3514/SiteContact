@@ -133,7 +133,7 @@
 <style scoped>
     .container {
         max-width: 1000px;
-        margin: 100px auto;
+        margin: 60px auto;
         padding: 20px;
         background: white;
         border-radius: 8px;
