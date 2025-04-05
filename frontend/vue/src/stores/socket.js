@@ -16,7 +16,8 @@ export const useSocketStore = defineStore('socket', () => {
 
         socket.value = io("http://localhost:3000", {
             auth: { 
-                token: authStore.token
+                token: authStore.token,
+                userId: authStore.user.id 
             }
         });
 
@@ -36,9 +37,14 @@ export const useSocketStore = defineStore('socket', () => {
         });
     };
 
+    const getCurrentUserId = () => {
+        return socket.value?.auth?.userId;
+    };
+
     return { 
         socket, 
         initSocket,
-        isConnected
+        isConnected, 
+        getCurrentUserId
     };
 });

@@ -17,6 +17,13 @@ export const useChatStore = defineStore('chat', () => {
         });
     }
 
+    const setMessages = (newMessages) => {
+        messages.value = newMessages.map(message => ({
+            ...message,
+            isOwn: message.isOwn || false
+        }));
+    };
+
     const clearChat = () => {
         targetUser.value = null;
         messages.value = [];
@@ -27,6 +34,7 @@ export const useChatStore = defineStore('chat', () => {
         messages,
         setTargetUser,
         clearChat,
-        addMessage
+        addMessage,
+        setMessages
     }
 });

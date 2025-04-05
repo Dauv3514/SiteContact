@@ -13,6 +13,13 @@
         router.push({ name: 'home' });
     }
 
+    const loadMessageHistory = () => {
+        if(!chatStore.targetUser) return;
+        socketStore.socket.emit('fetchMessages', {
+            userId: chatStore.targetUser.id
+        })
+    }
+
     const getProfileImage = (profileImage) => {
         if(!profileImage) {
             return 'https://static.vecteezy.com/ti/vecteur-libre/t1/2318271-icone-de-profil-utilisateur-vectoriel.jpg';
@@ -31,12 +38,11 @@
         };
          // Envoyer via socket
          socketStore.socket.emit('chat message', messageData);
-         console.log('Message envoyé :', messageData);
         
         // Ajouter au store local
         chatStore.addMessage({
             content: messageInput.value.trim(),
-            isOwn: true // message envoyé
+            isOwn: true
         });
         
         messageInput.value = '';
@@ -44,12 +50,18 @@
 
     onMounted(() => {
         socketStore.initSocket();
+        socketStore.socket?.on('connect', () => {
+            loadMessageHistory();
+        });
         socketStore.socket?.on('private_message', (message) => {
             chatStore.addMessage({
                 ...message,
                 isOwn: false
             });
         });
+        socketStore.socket?.on('message_history', (messages) => {
+            chatStore.setMessages(messages);
+        })
     });
     onUnmounted(() => {
         socketStore.socket?.disconnect();
