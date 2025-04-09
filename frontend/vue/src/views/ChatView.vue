@@ -8,6 +8,8 @@
     const chatStore = useChatStore();
     const router = useRouter();
     const messageInput = ref('');
+    const fileInput = ref(null);
+    const selectedFile = ref(null);
 
     if (!chatStore.targetUser) {
         router.push({ name: 'home' });
@@ -27,25 +29,53 @@
         return `http://localhost:3000/api/uploads/${profileImage}`;
     };
 
+    const handleFileUpload = async (event) => {
+        const file = event.target.files[0];
+        if (!file || !file.name.endsWith('.csv')) {
+            alert('Veuillez sélectionner un fichier CSV');
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+            selectedFile.value = {
+                name: file.name,
+                data: new Uint8Array(reader.result)
+            };
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    const downloadFile = (fileName) => {
+        console.log('Téléchargement du fichier:', fileName);
+    }   
+
     const sendMessage = () => {
-        if(!messageInput.value.trim()) {
+        if(!messageInput.value.trim() && !selectedFile.value) {
             return;
         };
         // Créer le message
         const messageData = {
             recipient_id: chatStore.targetUser.id,
-            content: messageInput.value.trim()
+            content: messageInput.value.trim(),
+            file: selectedFile.value ? {
+                name: selectedFile.value.name,
+                data: Array.from(selectedFile.value.data)
+            } : null
         };
-         // Envoyer via socket
-         socketStore.socket.emit('chat message', messageData);
-        
-        // Ajouter au store local
+
+        socketStore.socket.emit('chat message', messageData);
+
         chatStore.addMessage({
             content: messageInput.value.trim(),
+            fileName: selectedFile.value?.name,
             isOwn: true
         });
         
         messageInput.value = '';
+        selectedFile.value = null;
+        if (fileInput.value) {
+            fileInput.value.value = '';
+        }
     };
 
     onMounted(() => {
@@ -97,12 +127,40 @@
                         :key="message.id"
                         :class="['message', message.isOwn ? 'message-sent' : 'message-received']"
                     >
-                        {{ message.content }}
+                        <template v-if="message.fileName && message.content">
+                            <div class="message-content">{{ message.content }}</div>
+                            <div class="file-attachment">
+                                <button @click="downloadFile(message.fileName)" class="download-button">
+                                    📎 {{ message.fileName }}
+                                </button>
+                            </div>
+                        </template>
+                        <template v-else-if="message.fileName">
+                            <button @click="downloadFile(message.fileName)" class="download-button">
+                                📎 {{ message.fileName }}
+                            </button>
+                        </template>
+                        <template v-else>
+                            {{ message.content }}
+                        </template>
                     </div>
                 </div>
             </div>
 
             <div class="chat-input-container">
+                <input
+                    type="file"
+                    accept=".csv"
+                    ref="fileInput"
+                    @change="handleFileUpload"
+                    class="hidden"
+                />
+                <button @click="$refs.fileInput.click()" class="file-button">
+                    📎 CSV
+                </button>
+                <span v-if="selectedFile" class="selected-file">
+                    {{ selectedFile.name }}
+                </span>
                 <input
                     v-model="messageInput"
                     type="text" 
@@ -252,5 +310,55 @@
         color: #333;
         align-self: flex-start;
         margin-right: auto;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .file-button {
+        padding: 0.75rem;
+        background-color: #f0f0f0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .selected-file {
+        display: flex;
+        align-items: center;
+        font-size: 0.8em;
+        color: #666;
+        margin-left: 8px;
+    }
+
+    .message-content {
+        margin-bottom: 8px;
+    }
+
+    .file-attachment {
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 8px;
+        margin-top: 8px;
+    }
+
+    .message-sent .file-attachment {
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .message-received .file-attachment {
+        border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .download-button {
+        display: block;
+        margin-top: 4px;
+        padding: 4px 8px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
     }
 </style>

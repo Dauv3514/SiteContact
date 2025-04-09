@@ -1,5 +1,6 @@
 import { socketAuth } from "./middleware.js";
-import client from "../database.js"
+import { saveCSVFile } from "../middleware/csvMiddleware.js";
+import client from "../database.js";
 
 const initializeSocket = (io) => {
 
@@ -15,13 +16,27 @@ const initializeSocket = (io) => {
 
             socket.on("chat message", async(data) => {
                 try {
-                    const {recipient_id, content} = data;
-                    const query = `
+                    const {recipient_id, content, file} = data;
+                    
+                    let fileName = null;
+
+                    if (file && file.data) {
+                        fileName = await saveCSVFile(file.data, file.name);
+                    }
+
+                    const query = fileName ? `
+                        INSERT INTO messages (sender_id, recipient_id, content, file_name)
+                        VALUES ($1, $2, $3, $4)
+                        RETURNING *
+                    ` : `
                         INSERT INTO messages (sender_id, recipient_id, content)
                         VALUES ($1, $2, $3)
                         RETURNING *
                     `;
-                    const values = [socket.user.id, recipient_id, content];
+                    const values = fileName ? 
+                    [socket.user.id, recipient_id, content, fileName] :
+                    [socket.user.id, recipient_id, content];
+
                     const {rows} = await client.query(query, values);
                     
                     io.to(`user_${recipient_id}`).emit("private_message", {
@@ -29,6 +44,7 @@ const initializeSocket = (io) => {
                         senderId: socket.user.id,
                         senderName: socket.user.username,
                         content: content,
+                        fileName: fileName,
                         timestamp: rows[0].created_at
                     });
                 } catch (error) {
@@ -57,7 +73,11 @@ const initializeSocket = (io) => {
             socket.on("fetchMessages", async({userId}) => {
                 try {
                     const query =`
-                        SELECT content, sender_id, recipient_id
+                        SELECT 
+                            content, 
+                            sender_id, 
+                            recipient_id, 
+                            file_name
                         FROM messages
                         WHERE (sender_id = $1 AND recipient_id = $2)
                         OR (sender_id = $2 AND recipient_id = $1)
@@ -76,6 +96,7 @@ const initializeSocket = (io) => {
                             content: message.content,
                             senderId: message.sender_id,
                             timestamp: message.created_at,
+                            fileName: message.file_name,
                             isOwn: isOwn
                         };
                     });

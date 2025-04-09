@@ -172,3 +172,7 @@ export const exportContacts = async (req, res, next) => {
         next(err);
     }
 }
+
+export const exportFileChatContacts = async (req, res, next) => {
+}
+

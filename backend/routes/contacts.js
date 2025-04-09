@@ -5,7 +5,8 @@ import {
             getContact, 
             updateContact, 
             deleteContact,
-            exportContacts
+            exportContacts,
+            exportFileChatContacts
         } 
     from "../controllers/contacts.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
@@ -14,7 +15,8 @@ const router = express.Router();
 
 router.get("/", verifyToken, getContacts);
 router.post("/", verifyToken, newContact);
-router.get('/export-csv', verifyToken, exportContacts);
+router.get("/export-csv", verifyToken, exportContacts);
+router.get("/csv/:fileName", verifyToken, exportFileChatContacts);
 router.get("/:id", getContact);
 router.put("/:id", updateContact);
 router.delete("/:id", deleteContact);
