@@ -68,7 +68,7 @@
 
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
-            console.log('Téléchargement du fichier:', fileName);
+
         } catch (error) {
             console.error('Erreur téléchargement:', error);
         }
