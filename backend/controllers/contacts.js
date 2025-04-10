@@ -1,4 +1,6 @@
 import client from "../database.js";
+import path from 'path';
+import { promises as fs } from 'fs';
 
 export const getContacts = async (req, res) => {
     const user_id = req.user.id;
@@ -174,5 +176,41 @@ export const exportContacts = async (req, res, next) => {
 }
 
 export const exportFileChatContacts = async (req, res, next) => {
+    try {
+        const { fileName } = req.params;
+        const userId = req.user.id;
+
+        const query = `
+            SELECT m.* FROM messages m
+            WHERE m.file_name = $1
+            AND (m.sender_id = $2 OR m.recipient_id =$2)
+            LIMIT 1
+        `
+        const {rows} = await client.query(query, [fileName, userId]);
+        if(rows.length === 0) {
+            return res.status(404).json({
+                message: "Vous n'avez pas accès à ce fichier",
+                success: false
+            })
+        }
+        const filePath = path.join('./uploads/csv', fileName);
+        try {
+            await fs.access(filePath);
+        } catch(err) {
+            return res.status(404).json({
+                message: "Aucun fichier trouvé",
+                success: false
+            })
+        }
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader(
+            'Content-Disposition', 
+            `attachment; filename="${fileName}"`
+        );
+        res.sendFile(path.resolve(filePath));
+    } catch(error) {
+        console.error("Erreur lors du téléchargement:", error);
+        next(error);
+    }
 }
 

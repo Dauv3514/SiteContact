@@ -1,11 +1,14 @@
 <script setup>
+    import axios from 'axios';
     import { useSocketStore } from '../stores/socket';
     import { useChatStore } from '../stores/chat';
+    import { useAuthStore } from "../stores/auth";
     import { ref, onMounted, onUnmounted } from 'vue';
     import { useRouter } from 'vue-router';
 
     const socketStore = useSocketStore();
     const chatStore = useChatStore();
+    const authStore = useAuthStore();
     const router = useRouter();
     const messageInput = ref('');
     const fileInput = ref(null);
@@ -45,8 +48,30 @@
         reader.readAsArrayBuffer(file);
     }
 
-    const downloadFile = (fileName) => {
-        console.log('Téléchargement du fichier:', fileName);
+    const downloadFile = async (fileName) => {
+        try {
+            const apiUrl = `http://localhost:3000/api/contacts/csv/${fileName}`;
+            const response = await axios.get(apiUrl, {
+                responseType: 'blob',
+                headers: {Authorization: `Bearer ${authStore.token}`}
+            });
+            const blob = new Blob([response.data], { 
+                type: 'text/csv;charset=utf-8;' 
+            });
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            console.log('Téléchargement du fichier:', fileName);
+        } catch (error) {
+            console.error('Erreur téléchargement:', error);
+        }
     }   
 
     const sendMessage = () => {
